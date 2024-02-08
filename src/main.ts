@@ -1,8 +1,17 @@
 import { createApp } from 'vue'
-import './style.css'
+// import './style.css'
 import App from './App.vue'
-import { Button } from 'vant'
+import * as VueRouter from 'vue-router'
+import routes from './config/routes'
 
 const app = createApp(App);
-app.use(Button);
+
+// Create the router
+const router = VueRouter.createRouter({
+    history: VueRouter.createWebHashHistory(),
+    routes
+});
+
+
+app.use(router);
 app.mount('#app');
