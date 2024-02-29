@@ -17,13 +17,17 @@
 
   <van-divider content-position="left">Available Tags</van-divider>
   <van-tree-select v-model:active-id="activeIds" v-model:main-active-index="activeIndex" :items="tagList" />
+  <div style="padding: 12px">
+    <van-button block type="primary" @click="doSearchResult">Search</van-button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import {useRouter} from "vue-router";
 // import { useRouter } from 'vue-router'
 
-// const router = useRouter();
+const router = useRouter();
 
 const searchText = ref('');
 const initTagList = [
@@ -65,8 +69,17 @@ const doClose = (tag: string) => {
   activeIds.value = activeIds.value.filter(item => item !== tag)
 };
 
-
-
+/**
+ * Execute the search
+ */
+const doSearchResult = () => {
+  router.push({
+    path: '/user/list',
+    query: {
+      tags: activeIds.value
+    }
+  });
+};
 
 </script>
 

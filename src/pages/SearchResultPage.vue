@@ -1,72 +1,76 @@
 <template>
-  <form action="/">
-    <van-search v-model="searchText" show-action placeholder="Please enter the tag" @search="onSearch" @cancel="onCancel"
-      autofocus />
-  </form>
-
-  <van-divider content-position="left">Selected Tags</van-divider>
-  <div v-if="activeIds.length === 0">Please select the tags</div>
-  <van-row gutter="16">
-    <van-col v-for="tag in activeIds">
-      <van-tag closeable size="medium" type="primary" @close="doClose(tag)">
-        {{ tag }}
+  <van-card
+      v-for="user in userList"
+      :title="`${user.username} (${user.planetCode})`"
+      :desc="user.profile"
+      :thumb="user.avatarUrl"
+  >
+    <template #tags>
+      <van-tag plain type="danger" v-for="tag in user.tags" style="margin-right: 5px; margin-top: 5px">
+        {{tag}}
       </van-tag>
-    </van-col>
+    </template>
+    <template #footer>
+      <van-button size="mini">Contact Me</van-button>
+    </template>
+  </van-card>
 
-  </van-row>
+  <div>
+    <van-empty v-if="!userList || userList.length < 1" description="No such users."/>
+  </div>
 
-  <van-divider content-position="left">Available Tags</van-divider>
-  <van-tree-select v-model:active-id="activeIds" v-model:main-active-index="activeIndex" :items="tagList" />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-// import { useRouter } from 'vue-router'
+import {useRoute} from "vue-router";
+import {onMounted, ref} from "vue";
+import myAxios from "../plugins/myAxios.ts";
+import qs from 'qs';
+import {UserType} from "../models/user";
+const route = useRoute();
 
-// const router = useRouter();
+onMounted(async () => {
+    const userListData: UserType[] = await myAxios.get('/user/search/tags', {
+      params: {
+        tagNameList: tags
+      },
+      paramsSerializer: params => qs.stringify(params, {indices:  false}),
+    })
+        .then(function (response: string): UserType[] {
+          console.log('/user/search/tags', response);
+          return response.data.data;
+        })
+        .catch(function (error: Error) {
+          console.log('/user/search/tags', error);
+        });
 
-const searchText = ref('');
-const initTagList = [
-  {
-    text: 'Group 1',
-    children: [
-      { text: 'Delaware', id: 'Delaware' },
-      { text: 'Florida', id: 'Florida' },
-    ],
-  },
-  {
-    text: 'Group 2',
-    children: [
-      { text: 'Alabama', id: 'Alabama' },
-      { text: 'Kansas', id: 'Kansas' },
-      { text: 'Louisiana', id: 'Louisiana' },
-    ],
-  },
-];
-const activeIds = ref([]);
-const activeIndex = ref(0);
-const tagList = ref(initTagList);
+    if (userListData) {
+      userListData.forEach(user => {
+        if (user.tags) {
+          user.tags = JSON.parse(user.tags);
+        }
+      })
+      userList.value = userListData;
+    }
+});
 
-const onCancel = () => {
-  searchText.value = '';
-  tagList.value = initTagList;
-};
+const {tags} = route.query;
+// const mockUser = {
+//   id: 12345,
+//   username: "jjy",
+//   userAccount: "jjy",
+//   avatarUrl: "https://gavinjin0501.github.io/static/avatar1.png",
+//   profile: "handsome boy ajdosajdjasaajsldjsajsakjdasjdalsjd",
+//   gender: 1,
+//   phone: "13585519987",
+//   email: "jjy@jjy.com",
+//   userRole: 0,
+//   planetCode: "123",
+//   tags: ['java', 'emo', 'gaming'],
+//   createdTime: new Date(),
+// };
 
-const onSearch = (val: string) => {
-  tagList.value = initTagList.map(parentTag => {
-    const tempChildren = [...parentTag.children];
-    const tempParentTag = { ...parentTag };
-    tempParentTag.children = tempChildren.filter(item => item.text.includes(val));
-    return tempParentTag;
-  });
-
-};
-const doClose = (tag: string) => {
-  activeIds.value = activeIds.value.filter(item => item !== tag)
-};
-
-
-
+const userList = ref([]);
 
 </script>
 

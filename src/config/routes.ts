@@ -1,16 +1,18 @@
 import Index from '../pages/Index.vue'
 import Teams from '../pages/TeamsPage.vue'
 import User from '../pages/UserPage.vue'
-import Search from '../pages/SearchPage.vue'
 import UserEditPage from "../pages/UserEditPage.vue";
+import SearchResultPage from "../pages/SearchResultPage.vue";
+import SearchPage from "../pages/SearchPage.vue";
 
 // Define some routes
 const routes = [
     { path: '/', component: Index },
     { path: '/teams', component: Teams },
     { path: '/user', component: User },
-    { path: '/search', component: Search },
+    { path: '/search', component: SearchPage },
     { path: '/user/edit', component: UserEditPage },
+    { path: '/user/list', component: SearchResultPage },
 ];
 
  export default routes;
