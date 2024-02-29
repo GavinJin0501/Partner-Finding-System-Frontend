@@ -1,30 +1,42 @@
 <template>
-  <van-cell title="Nickname" is-link to="/user/edit" :value="user.username" @click="toEdit('username', 'Nickname', user.username)"/>
-  <van-cell title="User Account" :value="user.userAccount"/>
-  <van-cell title="Avatar" >
-    <img style="height: 32px" :src="user.avatarUrl" alt="https://gavinjin0501.github.io/static/avatar1.png"/>
-  </van-cell>
-  <van-cell title="Gender" is-link :value="user.gender" @click="toEdit('gender', 'Gender', user.gender)"/>
-  <van-cell title="Phone" is-link to="/user/edit" :value="user.phone" @click="toEdit('phone', 'Phone', user.phone)"/>
-  <van-cell title="Email" is-link to="/user/edit" :value="user.email" @click="toEdit('email', 'Email', user.email)"/>
-  <van-cell title="Planet Code" :value="user.planetCode" @click="toEdit('planetCode', 'PlanetCode', user.planetCode)"/>
-  <van-cell title="Account Creation Time" :value="user.createdTime.toDateString()"/>
+  <template v-if="user">
+    <van-cell title="Nickname" is-link to="/user/edit" :value="user.username" @click="toEdit('username', 'Nickname', user.username)"/>
+    <van-cell title="User Account" :value="user.userAccount"/>
+    <van-cell title="Avatar" >
+      <img style="height: 32px" :src="user.avatarUrl" alt="https://gavinjin0501.github.io/static/avatar1.png"/>
+    </van-cell>
+    <van-cell title="Gender" is-link :value="user.gender" @click="toEdit('gender', 'Gender', user.gender)"/>
+    <van-cell title="Phone" is-link to="/user/edit" :value="user.phone" @click="toEdit('phone', 'Phone', user.phone)"/>
+    <van-cell title="Email" is-link to="/user/edit" :value="user.email" @click="toEdit('email', 'Email', user.email)"/>
+    <van-cell title="Planet Code" :value="user.planetCode" @click="toEdit('planetCode', 'PlanetCode', user.planetCode)"/>
+    <van-cell title="Account Creation Time" :value="user.createdTime"/>
+  </template>
+
 </template>
 
 <script setup lang="ts">
 import {useRouter} from "vue-router";
+import {onMounted, ref} from "vue";
+import {UserType} from "../models/user";
+import {getCurrentUser} from "../services/user.ts";
 
-const user = {
-  id: 1,
-  username: "username-jjy",
-  userAccount: "account-jjy",
-  avatarUrl: "https://gavinjin0501.github.io/static/avatar1.png",
-  gender: "male",
-  phone: "13585519987",
-  email: "jjy@jjy.edu",
-  planetCode: "1234",
-  createdTime: new Date(),
-};
+// const user = {
+//   id: 1,
+//   username: "username-jjy",
+//   userAccount: "account-jjy",
+//   avatarUrl: "https://gavinjin0501.github.io/static/avatar1.png",
+//   gender: "male",
+//   phone: "13585519987",
+//   email: "jjy@jjy.edu",
+//   planetCode: "1234",
+//   createdTime: new Date(),
+// };
+
+const user: UserType = ref();
+
+onMounted(async () => {
+  user.value = await getCurrentUser();
+});
 
 const router = useRouter();
 
@@ -39,7 +51,6 @@ const toEdit = (editKey: string, editName: string, currentValue: string) => {
   });
 };
 
-c
 </script>
 
 <style scoped>

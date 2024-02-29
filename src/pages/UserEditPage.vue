@@ -18,20 +18,41 @@
 
 <script setup lang="ts">
 
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {ref} from "vue";
+import myAxios from "../plugins/myAxios.ts";
+import {showFailToast, showSuccessToast} from "vant";
+import {getCurrentUser} from "../services/user.ts";
+import {UserType} from "../models/user";
 
 const route = useRoute();
+const router = useRouter();
 const editUser = ref({
     editKey: route.query.editKey,
     editName: route.query.editName,
     currentValue: route.query.currentValue
 });
-console.log(editUser);
 
-const onSubmit = (values) => {
-  // todo: submit the editKey, currentValue, and editName to the backend
-  console.log("onSubmit", values)
+const onSubmit = async () => {
+  const currentUser: UserType = await getCurrentUser();
+  console.log(currentUser);
+  if (!currentUser) {
+    showFailToast('User not logged in');
+    return;
+  }
+
+  const res = await myAxios.post('/user/update', {
+    'id': currentUser.id,
+    [editUser.value.editKey as string]: editUser.value.currentValue,
+  });
+
+  console.log('update request:', res);
+  if (res.code === 0 && res.data > 0) {
+    showSuccessToast('Edit success!');
+    router.back();
+  } else {
+    showFailToast('Edit failed!');
+  }
 }
 
 </script>

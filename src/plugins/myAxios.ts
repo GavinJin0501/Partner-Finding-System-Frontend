@@ -1,7 +1,8 @@
 import axios, {AxiosInstance} from "axios";
 
 const myAxios : AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/api'
+    baseURL: 'http://localhost:8080/api',
+    withCredentials: true
 });
 myAxios.defaults.headers.common['Access-Control-Allow-Origin'] = "*";
 
@@ -16,7 +17,7 @@ myAxios.interceptors.request.use(function(config) {
 // Response interceptor
 myAxios.interceptors.response.use(function(response) {
     console.log("Receiving axios response:", response);
-    return response;
+    return response.data  ;
 }, function(error) {
     return Promise.reject(error);
 });
