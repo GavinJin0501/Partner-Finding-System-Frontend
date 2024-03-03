@@ -1,20 +1,5 @@
 <template>
-  <van-card
-      v-for="user in userList"
-      :title="`${user.username} (${user.planetCode})`"
-      :desc="user.profile"
-      :thumb="user.avatarUrl"
-  >
-    <template #tags>
-      <van-tag plain type="danger" v-for="tag in user.tags" style="margin-right: 5px; margin-top: 5px">
-        {{tag}}
-      </van-tag>
-    </template>
-    <template #footer>
-      <van-button size="mini">Contact Me</van-button>
-    </template>
-  </van-card>
-
+  <user-card-list :user-list="userList" />
   <div>
     <van-empty v-if="!userList || userList.length < 1" description="No such users."/>
   </div>
@@ -25,8 +10,8 @@
 import {useRoute} from "vue-router";
 import {onMounted, ref} from "vue";
 import myAxios from "../plugins/myAxios.ts";
-import qs from 'qs';
 import {UserType} from "../models/user";
+import UserCardList from "../components/UserCardList.vue";
 const route = useRoute();
 
 onMounted(async () => {
@@ -38,7 +23,7 @@ onMounted(async () => {
     })
         .then(function (response: string): UserType[] {
           console.log('/user/search/tags', response);
-          return response.data.data;
+          return response?.data;
         })
         .catch(function (error: Error) {
           console.log('/user/search/tags', error);
